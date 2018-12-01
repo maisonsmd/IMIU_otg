@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //add this
         serial.Init(this);
 
         Button mFindButton = (Button) findViewById(R.id.btnFind);

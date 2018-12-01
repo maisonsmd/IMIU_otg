@@ -28,7 +28,7 @@ public class msOTG {
 
 
     public void Write(String text) {
-        if(sPort == null){
+        if (sPort == null) {
             Toast.makeText(mContext.getApplicationContext(), "cannot write serial", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "cannot write serial");
             return;
@@ -75,22 +75,26 @@ public class msOTG {
         UsbManager usbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
 
+        try {
+            UsbSerialDriver driver = availableDrivers.get(0);
+            UsbDevice device = driver.getDevice();
+            if (availableDrivers.isEmpty())
+                return null;
 
-        UsbSerialDriver driver = availableDrivers.get(0);
-        UsbDevice device = driver.getDevice();
-        if (availableDrivers.isEmpty())
-            return null;
+            usbManager.requestPermission(device, mPermissionIntent);
 
-        usbManager.requestPermission(device, mPermissionIntent);
-
-        mConnection = usbManager.openDevice(device);
-        if (mConnection == null)
-            return null;
-        return driver.getPorts().get(0);
+            mConnection = usbManager.openDevice(device);
+            if (mConnection == null)
+                return null;
+            return driver.getPorts().get(0);
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+        return null;
     }
 
-    private static final String ACTION_USB_PERMISSION =
-            "com.android.example.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
